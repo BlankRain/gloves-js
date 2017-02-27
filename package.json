@@ -1,0 +1,15 @@
+{
+  "name": "gloves-js",
+  "version": "1.0.0",
+  "description": "a js lib for gloves to recieve message",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "blankrain",
+  "license": "MIT",
+  "dependencies": {
+		"mqtt" : "",
+    "rx":""
+	}
+}

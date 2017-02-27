@@ -1,0 +1,7 @@
+可以用ser2net把串口数据转发出来
+然后 用socket 来处理数据.
+sudo apt-get install ser2net
+vi /etc/ser2net.conf
+3002:telnet:600:/dev/ttyACM0:9600 8DATABITS NONE 1STOPBIT banner
+
+service ser2net restart
