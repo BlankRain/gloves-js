@@ -6,26 +6,35 @@ function mqttSource(){
     const client  = MQTT.connect('mqtt://localhost')
 
     client.on('connect', ()=> {client.subscribe('glove/touch/event')})
+    client.on('error',(e)=>{`${e} and mqtt error!`});
     return {source:client,onevent:"message",type:'mqtt'};
 }
+
 
 function hostPortSource(){
     const net = require('net');
     const readline = require('readline');
     const localClient = net.connect({host:"192.168.44.136",port: 3002}, () => {});
+    localClient.on('error',function(e){console.log(`${e} and host port is not opened`);});
     const  rl = readline.createInterface({input:localClient, output:localClient});
     return {source:rl,onevent:"line",type:'hostport'};
 }
-
-const watchSource=process.argv[2] !='mqtt'? hostPortSource():mqttSource();
-const source=Rx.Observable
-    .fromEvent(watchSource['source'],watchSource['onevent'],(t,m)=>{
-        if(watchSource['type']=='mqtt'){
-            return { topic: t, message: m ,type:watchSource['type']};
-        }else{
-            return { topic: "glove/touch/event", message: t ,type:watchSource['type']};
-        }
-    }).share();
+/**
+ * buildSource
+ */
+function buildSource(opts){
+    let watchSource=process.argv[2] !='mqtt'? hostPortSource():mqttSource();
+    const source=Rx.Observable
+        .fromEvent(watchSource['source'],watchSource['onevent'],(t,m)=>{
+            if(watchSource['type']=='mqtt'){
+                return { topic: t, message: m ,type:watchSource['type']};
+            }else{
+                return { topic: "glove/touch/event", message: t ,type:watchSource['type']};
+            }
+        }).share();
+    return source;
+}
+const source=buildSource()
 const createOnclickStream=(keyCode)=>{
     return { key:keyCode,
              stream:source
