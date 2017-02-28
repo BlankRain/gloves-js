@@ -1,6 +1,6 @@
 
 const Rx = require('rx');
-
+var Gloves={};
 function mqttSource(){
     const MQTT = require('mqtt');
     const client  = MQTT.connect('mqtt://localhost')
@@ -12,7 +12,7 @@ function mqttSource(){
 function hostPortSource(){
     const net = require('net');
     const readline = require('readline');
-    const localClient = net.connect({host:"192.168.44.135",port: 3002}, () => {});
+    const localClient = net.connect({host:"192.168.44.136",port: 3002}, () => {});
     const  rl = readline.createInterface({input:localClient, output:localClient});
     return {source:rl,onevent:"line",type:'hostport'};
 }
@@ -80,12 +80,22 @@ source.subscribe(
 /**
  *  
  */
-createOnclickStream('We').stream.subscribe((x)=>{  console.log(`${x} onclick`)})
-
+function demo(){
+    createOnclickStream('We').stream.subscribe((x)=>{  console.log(`${x} onclick`)})
 // createOnLongPushStream('We',1.5).stream.subscribe((x)=>{  console.log(`${JSON.stringify(x)} ---------long push`)
                 // ,(e)=>{console.log(e)}
                 // ,(c)=>{console.log("Completed")}})
+    createOnBothClickStream(["Zi","We"]).subscribe((x)=>{
+        console.log(`${JSON.stringify(x)} ---------both click`)
+    });
 
-createOnBothClickStream(["Zi","We"]).subscribe((x)=>{
-    console.log(`${JSON.stringify(x)} ---------both click`)
-});
+};
+
+
+
+Gloves.createOnclickStream=createOnclickStream
+Gloves.createOnBothClickStream=createOnBothClickStream
+Gloves.createOnLongPushStream=createOnLongPushStream
+Gloves.fiveGods=fiveGods
+Gloves.fiveKeys=['Zi','We','Wo','Ai','Ni']
+module.exports=Gloves
